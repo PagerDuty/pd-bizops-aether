@@ -12,6 +12,8 @@ Gem::Specification.new do |s|
   s.summary = 'salesforce data replication to redshift'
   s.description = 'salesforce data replication to redshift'
 
+  s.add_runtime_dependency 'restforce', '~> 1.5.1'
+
   s.add_development_dependency 'rake', '~> 10.4.2'
 
   s.files = `git ls-files`.split("\n")
