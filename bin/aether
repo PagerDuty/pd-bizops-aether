@@ -1,3 +1,54 @@
 #!/usr/bin/env ruby
 
+require 'slop'
+require 'yaml'
 require 'aether'
+
+options = Slop.parse do
+  on :config=, 'Configuration file'
+  on :secrets=, 'Secrets file'
+  on :stage=, 'Stage (development, staging, production)'
+  on :targets=, 'List of salesforce sobjects to sync (comma separated)',
+    as: Array
+end
+
+unless options[:config] then throw 'config is a required argument' end
+unless options[:secrets] then throw 'secrets is a required argument' end
+unless options[:stage] then throw 'stage is a required argument' end
+
+secrets = YAML.load_file(options[:secrets])
+salesforce_secrets = secrets['salesforce']
+redshift_secrets = secrets['redshift']
+s3_secrets = secrets['s3']
+
+connections = Aether::Connections.new(
+  salesforce_user: salesforce_secrets['user'],
+  salesforce_password: salesforce_secrets['password'],
+  salesforce_client_id: salesforce_secrets['client_id'],
+  salesforce_client_secret: salesforce_secrets['client_secret'],
+  salesforce_is_sandbox: salesforce_secrets['is_sandbox'],
+  redshift_user: redshift_secrets['user'],
+  redshift_password: redshift_secrets['password'],
+  redshift_host: redshift_secrets['host'],
+  redshift_port: redshift_secrets['port'],
+  redshift_dbname: redshift_secrets['dbname'],
+  aws_access_key: s3_secrets['aws_access_key'],
+  aws_secret_key: s3_secrets['aws_secret_key'])
+
+config = YAML.load_file(options[:config])
+
+[
+  'staging',
+  'target',
+  'swap'
+].each do |schema_type|
+  config['redshift']["#{schema_type}_schema"] =
+    options[:stage] + config['redshift']["#{schema_type}_schema_suffix"]
+end
+
+config['s3']['object_prefix'] = "aether/#{options[:stage]}"
+
+Aether::sync(
+  connections: connections,
+  config: config,
+  targets: options[:targets])

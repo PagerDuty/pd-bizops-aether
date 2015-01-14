@@ -1,0 +1,20 @@
+# do not use number_of_processes: 8
+# InvalidBatch : Failed to process query: EXTERNAL_OBJECT_EXCEPTION:
+# Search API Daily Limit Exceeded!
+number_of_processes: 8
+# prioritize sobjects with largest amounts of data first
+# to avoid waiting for them at the end
+# TODO add logic to handle this
+#prioritized_sobjects: ['Account', 'Task']
+redshift:
+  staging_schema_suffix: '_sfdc_tmp'
+  target_schema_suffix: '_sfdc'
+  swap_schema_suffix: '_sfdc_old'
+s3:
+  bucket: 'pd-analytics'
+# add distkeys and sortkeys to specific tables
+# TODO add logic to handle this
+#redshift_metadata:
+#  account:
+#    distkey: 'pagerduty_account_id__c'
+#    sortkey: 'modifieddate'
