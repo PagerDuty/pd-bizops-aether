@@ -35,4 +35,4 @@ Gemfile.lock
 
 # vim swp files
 *.swp
-config/secrets.yml
+config/

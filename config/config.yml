@@ -1,8 +1,0 @@
-number_of_processes: 8
-readonly_groups: ['analytics']
-redshift:
-  staging_schema_suffix: '_sfdc_tmp'
-  target_schema_suffix: '_sfdc'
-  swap_schema_suffix: '_sfdc_old'
-s3:
-  bucket: 'pd-analytics'
