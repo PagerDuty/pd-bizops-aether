@@ -27,6 +27,24 @@ module Aether
     swap_schema = config['redshift']['swap_schema']
 
     connections.reestablish_redshift
+
+    # grant access to staging_schema before swap
+    if config['readonly_groups'] and config['readonly_groups'].length > 0
+      group_fragments = config['readonly_groups'].map { |g| "GROUP #{g}" }
+
+      schema_grant = [
+        "GRANT USAGE ON SCHEMA #{staging_schema}",
+        "TO #{group_fragments.join(', ')}"
+      ].join(' ')
+      connections.redshift.exec(schema_grant)
+
+      table_grant = [
+        'GRANT SELECT ON ALL TABLES',
+        "IN SCHEMA #{staging_schema} TO #{group_fragments.join(', ')}"
+      ].join(' ')
+      connections.redshift.exec(table_grant)
+    end
+
     RedshiftHelper::swap_schemas(
       connection: connections.redshift,
       staging_schema: staging_schema,
