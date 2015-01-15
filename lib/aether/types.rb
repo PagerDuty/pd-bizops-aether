@@ -182,8 +182,6 @@ module Aether
         if value.empty?
           nil
         else
-          # from: '2014-07-29T18:23:36.000Z'
-          # to: 'YYYY-MM-DD HH:MI:SS'
           DateTime.parse(value).strftime('%Y-%m-%d %H:%M:%S.%6N')
         end
       end
