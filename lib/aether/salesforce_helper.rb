@@ -91,9 +91,6 @@ module Aether
     def self.field_to_type(connection:, sobject_name:)
       sobject_describe = connection.describe(sobject_name)
 
-      # TODO for string types, we could look at the byteLength
-      # for larger strings, we could truncate or split into multiple fields
-
       sf_fields = {}
       sobject_describe.fields.each do |f|
         case f.type
@@ -104,12 +101,13 @@ module Aether
         when 'id'
           sf_fields[f.name] = SFTypes::Id.new
         when 'int'
-          # TODO may need to extract 'digits' from the field type 'int'
           sf_fields[f.name] = SFTypes::Int.new
         when 'boolean'
           sf_fields[f.name] = SFTypes::Boolean.new
         when 'string'
-          sf_fields[f.name] = SFTypes::SFString.new
+          sf_fields[f.name] = SFTypes::SFString.new(
+            max_length: f.byteLength
+          )
         when 'datetime'
           sf_fields[f.name] = SFTypes::SFDatetime.new
         when 'reference'
@@ -121,39 +119,55 @@ module Aether
         when 'date'
           sf_fields[f.name] = SFTypes::SFDate.new
         when 'email'
-          sf_fields[f.name] = SFTypes::Email.new
+          sf_fields[f.name] = SFTypes::Email.new(
+            max_length: f.byteLength
+          )
         when 'location'
-          sf_fields[f.name] = SFTypes::Location.new
+          # location unsupported by bulk api
         when 'percent'
           sf_fields[f.name] = SFTypes::Percent.new(
             precision: f.precision,
             scale: f.scale)
         when 'phone'
-          sf_fields[f.name] = SFTypes::Phone.new
+          sf_fields[f.name] = SFTypes::Phone.new(
+            max_length: f.byteLength
+          )
         when 'picklist'
-          sf_fields[f.name] = SFTypes::Picklist.new
+          sf_fields[f.name] = SFTypes::Picklist.new(
+            max_length: f.byteLength
+          )
         when 'multipicklist'
-          sf_fields[f.name] = SFTypes::Multipicklist.new
+          sf_fields[f.name] = SFTypes::Multipicklist.new(
+            max_length: f.byteLength
+          )
         when 'textarea'
-          sf_fields[f.name] = SFTypes::Textarea.new
+          sf_fields[f.name] = SFTypes::Textarea.new(
+            max_length: f.byteLength
+          )
         when 'encryptedstring'
-          sf_fields[f.name] = SFTypes::Encryptedstring.new
+          sf_fields[f.name] = SFTypes::Encryptedstring.new(
+            max_length: f.byteLength
+          )
         when 'url'
-          sf_fields[f.name] = SFTypes::Url.new
+          sf_fields[f.name] = SFTypes::Url.new(
+            max_length: f.byteLength
+          )
         when 'combobox'
-          sf_fields[f.name] = SFTypes::Combobox.new
+          sf_fields[f.name] = SFTypes::Combobox.new(
+            max_length: f.byteLength
+          )
         when 'base64'
           # base64 unsupported by the bulk api
           # FeatureNotEnabled : Binary field not supported
-          #sf_fields[f.name] = SFTypes::SFBase64.new
         when 'anyType'
-          sf_fields[f.name] = SFTypes::Any.new
+          sf_fields[f.name] = SFTypes::Any.new(
+            max_length: f.byteLength
+          )
         when 'time'
           sf_fields[f.name] = SFTypes::SFTime.new
         when 'address'
           # InvalidBatch : Failed to process query: FUNCTIONALITY_NOT_ENABLED:
           # Selecting compound data not supported in Bulk Query
-          #sf_fields[f.name] = SFTypes::Address.new
         else
           raise "unknown sfdc type: '#{f.type}' on sobject: '#{sobject_name}' on field: '#{f.name}'"
         end

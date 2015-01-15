@@ -105,7 +105,7 @@ module Aether
     # https://devcenter.heroku.com/articles/forked-pg-connections#forked-environments
     connections.reestablish_redshift
 
-    create_staging_table(
+    create_table(
       connection: connections.redshift,
       target_schema: target_schema,
       target_table: target_table,
@@ -131,7 +131,7 @@ module Aether
     object.delete
   end
 
-  def self.create_staging_table(
+  def self.create_table(
     connection:,
     target_schema:,
     target_table:,

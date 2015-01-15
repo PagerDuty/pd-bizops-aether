@@ -2,17 +2,14 @@ require 'date'
 
 module Aether
   module SFTypes
+    MAX_CHARACTERVARYING_SIZE = 65535
+
     class SFDouble
       attr_reader :precision, :scale
 
       def initialize(precision:, scale:)
         @precision = precision
         @scale = scale
-      end
-
-      def ==(other)
-        self.precision == other.precision &&
-          self.scale == other.scale
       end
 
       def to_rs_type
@@ -47,9 +44,15 @@ module Aether
     end
 
     class SFString
+      attr_reader :max_length
+
+      def initialize(max_length:)
+        # prevent max_length going over redshift's max column size
+        @max_length = [MAX_CHARACTERVARYING_SIZE, max_length].min
+      end
+
       def to_rs_type
-        # 65535 is the maximum length
-        ::Aether::RSTypes::CharacterVarying.new(max_length: 65535)
+        ::Aether::RSTypes::CharacterVarying.new(max_length: max_length)
       end
     end
 
@@ -71,22 +74,13 @@ module Aether
       end
     end
 
-    class SFBase64 < SFString
-    end
-
     class Any < SFString
     end
 
     class Email < SFString
     end
 
-    class Location < SFString
-    end
-
     class Percent < SFDouble
-    end
-
-    class Address < SFString
     end
 
     class Phone < SFString
@@ -127,11 +121,6 @@ module Aether
       def transform_from_mysql(value)
         value
       end
-
-      def ==(other)
-        self.precision == other.precision &&
-          self.scale == other.scale
-      end
     end
 
     class Bigint
@@ -157,10 +146,6 @@ module Aether
 
       def to_rs_schema(field_name:)
         "#{field_name} character varying(#{max_length})"
-      end
-
-      def ==(other)
-        self.max_length == other.max_length
       end
 
       def transform_from_mysql(value)
