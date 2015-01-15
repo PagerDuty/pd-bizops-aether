@@ -3,3 +3,5 @@ rvm:
   - 2.1
   - 2.2
 script: bundle exec rake
+notifications:
+  email: false
