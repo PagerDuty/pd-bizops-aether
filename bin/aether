@@ -47,6 +47,7 @@ config = YAML.load_file(options[:config])
 end
 
 config['s3']['object_prefix'] = "aether/#{options[:stage]}"
+config['stage'] = options[:stage]
 
 Aether::sync(
   connections: connections,

@@ -12,6 +12,7 @@ bundle exec aether --config config.yml --secrets secrets.yml --stage development
 ```
 number_of_processes: 8
 readonly_groups: ['x']
+stages_to_apply_group_grants: ['x']
 redshift:
   staging_schema_suffix: '_sfdc_tmp'
   target_schema_suffix: '_sfdc'

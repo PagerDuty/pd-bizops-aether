@@ -29,7 +29,11 @@ module Aether
     connections.reestablish_redshift
 
     # grant access to staging_schema before swap
-    if config['readonly_groups'] and config['readonly_groups'].length > 0
+    apply_grants_to_stage =
+      config['stages_to_apply_group_grants'].include?(config['stage'])
+    has_readonly_groups =
+      config['readonly_groups'] and config['readonly_groups'].length > 0
+    if apply_grants_to_stage and has_readonly_groups
       group_fragments = config['readonly_groups'].map { |g| "GROUP #{g}" }
 
       schema_grant = [
