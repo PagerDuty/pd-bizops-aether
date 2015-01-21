@@ -24,8 +24,10 @@ module Aether
         connection.exec("DROP SCHEMA IF EXISTS #{swap_schema} CASCADE")
 
         swap_query = [
+          'BEGIN READ WRITE',
           "ALTER SCHEMA #{target_schema} RENAME TO #{swap_schema}",
-          "ALTER SCHEMA #{staging_schema} RENAME TO #{target_schema}"
+          "ALTER SCHEMA #{staging_schema} RENAME TO #{target_schema}",
+          'COMMIT'
         ].join('; ')
 
         connection.exec(swap_query)
