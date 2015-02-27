@@ -96,8 +96,7 @@ module Aether
     begin
       sobjects = connections.salesforce_bulk.query(sobject_name, query)
     rescue RuntimeError => e
-      puts "Got exception while querying '#{query}'"
-      puts e
+      puts "ERROR: Got exception '#{e}' while querying '#{query}'"
 
       return
     end
