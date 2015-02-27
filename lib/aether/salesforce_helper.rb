@@ -3,89 +3,9 @@ require 'aether/types'
 module Aether
   module SalesforceHelper
     def self.all_sobject_names(connection:)
-      valid_sobjects = connection.describe.keep_if do |sobject|
-        # see for latest filters:
-        # http://salesforce.stackexchange.com/questions/55604/standard-objects-limits
-
-        # soql limits:
-        # http://www.salesforce.com/us/developer/docs/soql_sosl280/Content/sforce_api_calls_soql_limits.htm
-
-        bad_sobjects = []
-
-        # filter ContentDocumentLink due to:
-        # Implementation restriction: ContentDocumentLink requires a filter
-        # by a single Id, ContentDocumentId or LinkedEntityId
-        # using the equals operator
-        bad_sobjects << 'ContentDocumentLink'
-
-        # filter EmailStatus due to:
-        # InvalidEntity: Entity 'EmailStatus' is not supported by the Bulk API.
-        bad_sobjects << 'EmailStatus'
-
-        # InvalidBatch : Failed to process query: INVALID_TYPE_FOR_OPERATION:
-        # entity type FeedLike does not support query
-        bad_sobjects << 'FeedLike'
-
-        # InvalidBatch : Failed to process query: INVALID_TYPE_FOR_OPERATION:
-        # entity type FeedTrackedChange does not support query
-        bad_sobjects << 'FeedTrackedChange'
-
-        # InvalidBatch : Failed to process query: MALFORMED_QUERY:
-        # Implementation restriction. When querying the Idea Comment object,
-        # you must filter using the following syntax: CommunityId =
-        # [single ID], Id = [single ID], IdeaId = [single ID],
-        # Id IN [list of IDs], or IdeaId IN [list of IDs]
-        bad_sobjects << 'IdeaComment'
-
-        # InvalidBatch : Failed to process query:
-        # EXTERNAL_OBJECT_UNSUPPORTED_EXCEPTION:
-        # Getting all PlatformAction entities is unsupported
-        bad_sobjects << 'PlatformAction'
-
-        # InvalidEntity: Entity 'QuoteTemplateRichTextData'
-        # is not supported by the Bulk API.
-        bad_sobjects << 'QuoteTemplateRichTextData'
-
-        # InvalidBatch : Failed to process query: MALFORMED_QUERY:
-        # Implementation restriction: When querying the Vote object, you must
-        # filter using the following syntax: ParentId = [single ID],
-        # Parent.Type = [single Type], Id = [single ID], or Id IN [list of ID's]
-        bad_sobjects << 'Vote'
-
-        # InvalidBatch : Failed to process query: MALFORMED_QUERY:
-        # Implementation restriction: CollaborationGroupRecord requires a
-        # filter by a single Id, CollaborationGroupId or RecordId using
-        # the equals operator
-        bad_sobjects << 'CollaborationGroupRecord'
-
-        # We got the following error even though
-        # we didn't really query it that often:
-        # InvalidBatch : Failed to process query: EXTERNAL_OBJECT_EXCEPTION:
-        # Search API Daily Limit Exceeded!
-        bad_sobjects << 'DatacloudCompany'
-        bad_sobjects << 'DatacloudContact'
-
-        # InvalidBatch : Failed to process query: EXTERNAL_OBJECT_EXCEPTION:
-        # This data is no longer available. The "DatacloudSocialHandle" table
-        # in the external data source is currently unavailable.
-        # Try again later or contact your administrator for help.
-        bad_sobjects << 'DatacloudSocialHandle'
-        bad_sobjects << 'DcSocialProfileHandle'
-
-        # InvalidBatch : Failed to process query: UNKNOWN_EXCEPTION: An
-        # unexpected error occurred. Please include this ErrorId if
-        # you contact support: 369403691-29629 (-1440605423)
-        bad_sobjects << 'DcSocialProfile'
-
-        # if keyPrefix is nil, you can not query it in the bulk api
-        sobject['keyPrefix'] && !bad_sobjects.include?(sobject['name'])
-      end
-
-      valid_sobject_names = valid_sobjects.map do |sobject|
+      connection.describe.map do |sobject|
         sobject['name']
       end
-
-      valid_sobject_names
     end
 
     def self.field_to_type(connection:, sobject_name:)
