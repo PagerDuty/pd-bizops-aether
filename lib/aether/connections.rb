@@ -33,10 +33,10 @@ module Aether
         salesforce_host = 'login.salesforce.com'
       end
 
-      # set api version to 32.0 (winter 15)
+      # set api version to 33.0 (spring 15)
       # to fix: Idea.IsLocked field not getting recognized on API 26.0 apex class
       # https://success.salesforce.com/issues_view?id=a1p30000000T3tyAAC
-      salesforce_api_version = '32.0'
+      salesforce_api_version = '33.0'
 
       @salesforce = ::Restforce.new(
         username: salesforce_user,
