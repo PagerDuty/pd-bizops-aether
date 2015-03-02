@@ -118,7 +118,7 @@ module Aether
         "#{field_name} numeric(#{precision}, #{scale})"
       end
 
-      def transform_from_mysql(value)
+      def transform_from_salesforce(value)
         value
       end
     end
@@ -128,7 +128,7 @@ module Aether
         "#{field_name} bigint"
       end
 
-      def transform_from_mysql(value)
+      def transform_from_salesforce(value)
         if value.nil?
           nil
         else
@@ -148,7 +148,7 @@ module Aether
         "#{field_name} character varying(#{max_length})"
       end
 
-      def transform_from_mysql(value)
+      def transform_from_salesforce(value)
         value
       end
     end
@@ -158,7 +158,7 @@ module Aether
         "#{field_name} boolean"
       end
 
-      def transform_from_mysql(value)
+      def transform_from_salesforce(value)
         value
       end
     end
@@ -168,7 +168,7 @@ module Aether
         "#{field_name} date"
       end
 
-      def transform_from_mysql(value)
+      def transform_from_salesforce(value)
         value
       end
     end
@@ -178,7 +178,7 @@ module Aether
         "#{field_name} timestamp without time zone"
       end
 
-      def transform_from_mysql(value)
+      def transform_from_salesforce(value)
         if value.empty?
           nil
         else

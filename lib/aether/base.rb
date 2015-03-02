@@ -109,7 +109,7 @@ module Aether
           sobject_value = sobject[sobject_field]
           rs_type = rs_fields[sobject_field.downcase]
 
-          rs_type.transform_from_mysql(sobject_value)
+          rs_type.transform_from_salesforce(sobject_value)
         end
       end
     end
