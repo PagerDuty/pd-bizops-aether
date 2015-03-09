@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/PagerDuty/pd-bizops-aether.svg)](https://travis-ci.org/PagerDuty/pd-bizops-aether)
+
 # pd-bizops-aether
 salesforce data replication to redshift
 
